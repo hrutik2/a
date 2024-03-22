@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+ 
+    justify-content: center;
+    align-items: center;
+   
+    background-color: #f0f0f0;
+}
+
+#container {
+    width: 50%;
+    height: 300px;
+    margin:auto;
+    margin-top: 50px;
+    border: 2px dashed #ccc;
+    padding: 10px;
+    background-color: #fff;
+}
+
+#drop-area {
+    width: 95%;
+    margin: auto;
+    height: 95%;
+    border: 2px dashed #999;
+    
+    text-align: center;
+  
+}
+
+#uploaded-images img {
+    max-width: 100%;
+    margin-bottom: 10px;
+}
+</style>
+<body>
+    <h1 style="text-align: center;">Drag and Drop Image Uploader</h1>
+    
+    <div id="container">
+        <div id="drop-area">
+            <label for="file-input" id="upload-label">Click to upload or drag & drop images here</label>
+            <input type="file" id="file-input" accept="image/*" multiple style="display: none;">
+        </div>
+        <div id="uploaded-images"></div>
+    </div>
+</body>
+
+
+<script>
+   
+    const dragDropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('file-input');
+    const uploadLabel = document.getElementById('upload-label');
+    const uploadedImagesContainer = document.getElementById('uploaded-images');
+
+    
+    dragDropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dragDropArea.classList.add('drag-over');
+            })
+    dragDropArea.addEventListener('dragleave', () => {
+                dragDropArea.classList.remove('drag-over');
+            });
+    
+
+   
+    dragDropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragDropArea.classList.remove('drag-over')
+        const files = e.dataTransfer.files;
+        console.log(files)
+       
+        handleFiles(files);
+    });
+
+    
+    fileInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+       
+        handleFiles(files);
+    });
+
+    
+    dragDropArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+    
+    function uploadflie(img){
+
+        fetch("http://localhost:8001/upload",{
+            method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ img: img}),
+        })
+        .then(res=>res.json())
+        .then(res=>console.log(res))
+        .catch(err => {
+        console.error('Upload error:', err);
+    });
+    }
+    function handleFiles(files) {
+                for (const file of files) {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const imageUrl = event.target.result;
+                            const uploadedImage = document.createElement('img');
+                            uploadedImage.src = imageUrl;
+                            uploadedImagesContainer.appendChild(uploadedImage);
+
+                            
+                            uploadflie(imageUrl);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            }
+   
+
+
+</script>
+</html>
