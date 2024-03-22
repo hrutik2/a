@@ -47,8 +47,10 @@
             <label for="file-input" id="upload-label">Click to upload or drag & drop images here</label>
             <input type="file" id="file-input" accept="image/*" multiple style="display: none;">
         </div>
-        <div id="uploaded-images"></div>
+        
     </div>
+    <br/>
+    <div id="uploaded-images"></div>
 </body>
 
 
@@ -109,18 +111,13 @@
     function handleFiles(files) {
                 for (const file of files) {
                     if (file.type.startsWith('image/')) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            const imageUrl = event.target.result;
-                            const uploadedImage = document.createElement('img');
-                            uploadedImage.src = imageUrl;
-                            uploadedImagesContainer.appendChild(uploadedImage);
-
-                            
-                            uploadflie(imageUrl);
-                        };
-                        reader.readAsDataURL(file);
-                    }
+                   const imageUrl = URL.createObjectURL(file);
+                    const uploadedImage = document.createElement('img');
+                   uploadedImage.src = imageUrl;
+                     uploadedImagesContainer.appendChild(uploadedImage);
+            
+            uploadflie(imageUrl);
+        }
                 }
             }
    
